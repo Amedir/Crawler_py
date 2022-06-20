@@ -28,7 +28,8 @@ col_str_dic = {column:str for column in list(df)}
 df = pd.read_csv(url_1, dtype = col_str_dic)
 nomes_empresas = df["name"]
 cnpj_empreasas = df["cnpj"]
-driver = webdriver.Chrome(executable_path=r'C:\workspace\PD\Crawler\chromedriver.exe')
+exe = os.path.abspath('./chromedriver.exe')
+driver = webdriver.Chrome(executable_path=str(exe))
 
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = '1DmTENt26YQzAAqewKWXltD1NoZRRD0KlU8j6pIXAy-o'
