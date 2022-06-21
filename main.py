@@ -65,9 +65,9 @@ for i in range(len(nomes_empresas)):
     nome = str(nomes_empresas[i])
     cnpj = str(cnpj_empreasas[i])
     if cnpj == 'nan':
-        exe = os.path.abspath('./chromedriver.exe')
-        driver = webdriver.Chrome(executable_path=str(exe)) 
-        # driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+        # exe = os.path.abspath('./chromedriver.exe')
+        # driver = webdriver.Chrome(executable_path=str(exe)) 
+        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
         driver.get('https://cnpjs.rocks')
         try:
             #Opening page
