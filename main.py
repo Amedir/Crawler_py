@@ -9,7 +9,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-
+from fake_useragent import UserAgent
 import os
 import requests
 import json 
@@ -38,7 +38,7 @@ chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--no-sandbox")
-driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+ua = UserAgent()
 
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = '1DmTENt26YQzAAqewKWXltD1NoZRRD0KlU8j6pIXAy-o'
@@ -63,11 +63,13 @@ if not creds or not creds.valid:
 service = build('sheets', 'v4', credentials=creds)
 sheet = service.spreadsheets()
 
-driver.get('https://cnpjs.rocks')
 for i in range(len(nomes_empresas)):
+    chrome_options.add_argument(f'user-agent={ua.random}')
+    driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
     nome = str(nomes_empresas[i])
     cnpj = str(cnpj_empreasas[i])
     if cnpj == 'nan':
+        driver.get('https://cnpjs.rocks')
         try:
             #Opening page
             time.sleep(5)
@@ -91,3 +93,5 @@ for i in range(len(nomes_empresas)):
             SAMPLE_RANGE_NAME = 'Empresas Tableau!A'+str(i+2)+':A'+str(i+2)
             result = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME, valueInputOption="RAW", body={"values":valores_adicionar}).execute()
         print("Nome da empresa: ", nome, " CNPJ: ", cnpj)
+        driver.quit()
+    
