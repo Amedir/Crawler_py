@@ -1,4 +1,5 @@
 from __future__ import print_function
+from lib2to3.pgen2 import driver
 from random import sample
 from selenium.webdriver import Chrome
 from selenium import webdriver
@@ -10,7 +11,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-import os.path
+import os
 import requests
 import json 
 import time
@@ -28,8 +29,17 @@ col_str_dic = {column:str for column in list(df)}
 df = pd.read_csv(url_1, dtype = col_str_dic)
 nomes_empresas = df["name"]
 cnpj_empreasas = df["cnpj"]
-exe = os.path.abspath('./chromedriver.exe')
-driver = webdriver.Chrome(executable_path=str(exe))
+
+# Configuração alternativa
+# exe = os.path.abspath('./chromedriver.exe')
+# driver = webdriver.Chrome(executable_path=str(exe))
+
+chrome_options = webdriver.ChromeOptions()
+chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--no-sandbox")
+driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
 
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = '1DmTENt26YQzAAqewKWXltD1NoZRRD0KlU8j6pIXAy-o'
@@ -81,3 +91,4 @@ for i in range(len(nomes_empresas)):
             valores_adicionar = [[cnpj]]
             SAMPLE_RANGE_NAME = 'Empresas Tableau!A'+str(i+2)+':A'+str(i+2)
             result = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME, valueInputOption="RAW", body={"values":valores_adicionar}).execute()
+        print("Nome da empresa: ", nome, " CNPJ: ", cnpj)
