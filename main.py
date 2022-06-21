@@ -9,7 +9,6 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from fake_useragent import UserAgent
 import os
 import requests
 import json 
@@ -38,7 +37,6 @@ chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--no-sandbox")
-ua = UserAgent()
 
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = '1DmTENt26YQzAAqewKWXltD1NoZRRD0KlU8j6pIXAy-o'
@@ -64,11 +62,12 @@ service = build('sheets', 'v4', credentials=creds)
 sheet = service.spreadsheets()
 
 for i in range(len(nomes_empresas)):
-    chrome_options.add_argument(f'user-agent={ua.random}')
-    driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
     nome = str(nomes_empresas[i])
     cnpj = str(cnpj_empreasas[i])
     if cnpj == 'nan':
+        # exe = os.path.abspath('./chromedriver.exe')
+        # driver = webdriver.Chrome(executable_path=str(exe)) 
+        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
         driver.get('https://cnpjs.rocks')
         try:
             #Opening page
@@ -83,15 +82,19 @@ for i in range(len(nomes_empresas)):
             cnpj = 'Não achou'
             contatos = 'Não achou'
         if achou:
-            time.sleep(5)
-            driver.switch_to.window(driver.window_handles[1])
-            cnpj = driver.find_element(by=By.XPATH, value='/html/body/div/div[2]/ul[1]/li[1]/strong').text
-            contatos = driver.find_element(by=By.XPATH, value='/html/body/div/div[2]/ul[5]').text
-            driver.close() 
+            try:
+                time.sleep(5)
+                driver.switch_to.window(driver.window_handles[1])
+                cnpj = driver.find_element(by=By.XPATH, value='/html/body/div/div[2]/ul[1]/li[1]/strong').text
+                contatos = driver.find_element(by=By.XPATH, value='/html/body/div/div[2]/ul[5]').text
+                driver.close() 
 
-            valores_adicionar = [[cnpj]]
-            SAMPLE_RANGE_NAME = 'Empresas Tableau!A'+str(i+2)+':A'+str(i+2)
-            result = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME, valueInputOption="RAW", body={"values":valores_adicionar}).execute()
+                valores_adicionar = [[cnpj]]
+                SAMPLE_RANGE_NAME = 'Empresas Tableau!A'+str(i+2)+':A'+str(i+2)
+                result = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME, valueInputOption="RAW", body={"values":valores_adicionar}).execute()
+            except:
+                cnpj = 'Não achou'
+                contatos = 'Não achou'
         print("Nome da empresa: ", nome, " CNPJ: ", cnpj)
         driver.quit()
     
