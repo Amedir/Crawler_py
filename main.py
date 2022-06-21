@@ -1,6 +1,5 @@
 from __future__ import print_function
 from lib2to3.pgen2 import driver
-from random import sample
 from selenium.webdriver import Chrome
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
