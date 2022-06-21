@@ -65,9 +65,9 @@ for i in range(len(nomes_empresas)):
     nome = str(nomes_empresas[i])
     cnpj = str(cnpj_empreasas[i])
     if cnpj == 'nan':
-        # exe = os.path.abspath('./chromedriver.exe')
-        # driver = webdriver.Chrome(executable_path=str(exe)) 
-        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+        exe = os.path.abspath('./chromedriver.exe')
+        driver = webdriver.Chrome(executable_path=str(exe)) 
+        # driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
         driver.get('https://cnpjs.rocks')
         try:
             #Opening page
@@ -81,6 +81,24 @@ for i in range(len(nomes_empresas)):
             achou = False
             cnpj = 'Não achou'
             contatos = 'Não achou'
+            try:
+                vqd = driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[1]/div').text
+                if vqd[0] == 'V':
+                    driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[2]/div/div[1]/div[1]/div/a').click()
+                    achou = True
+            except:
+                try:
+                    evd = driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[1]/div/div[2]').text
+                    print(evd)
+                    if evd[0] == 'E':
+                        driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[1]/div/div[2]/a').click()
+                        time.sleep(2)
+                        driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[1]/div[1]/div[1]/div[1]/div/a').click()
+                        achou = True
+                except:
+                    achou = False
+                    cnpj = 'Não achou'
+                    contatos = 'Não achou'
         if achou:
             try:
                 time.sleep(5)
