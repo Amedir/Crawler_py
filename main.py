@@ -62,7 +62,7 @@ for i in range(len(nomes_empresas)):
     phone = str(phone_empresas[i])
     email = str(email_empresas[i])
     if cnpj == 'nan':
-        driver = webdriver.Chrome(service(os.environ.get("CHROMEDRIVER_PATH")), options=chrome_options)
+        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=chrome_options)
         driver.get('https://cnpjs.rocks')
         try:
             #Opening page
