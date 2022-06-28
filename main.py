@@ -27,11 +27,10 @@ col_str_dic = {column:str for column in list(df)}
 df = pd.read_csv(url_1, dtype = col_str_dic)
 nomes_empresas = df["name"]
 cnpj_empreasas = df["cnpj"]
+phone_empresas = df["bussines_phone"]
+email_empresas = df["bussines_email"]
 
-# Configuração alternativa
-# exe = os.path.abspath('./chromedriver.exe')
-# driver = webdriver.Chrome(executable_path=str(exe))
-
+# COnfiguração para o Google Chrome do Heroku
 chrome_options = webdriver.ChromeOptions()
 chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
 chrome_options.add_argument("--headless")
@@ -64,9 +63,9 @@ sheet = service.spreadsheets()
 for i in range(len(nomes_empresas)):
     nome = str(nomes_empresas[i])
     cnpj = str(cnpj_empreasas[i])
+    phone = str(phone_empresas[i])
+    email = str(email_empresas[i])
     if cnpj == 'nan':
-        # exe = os.path.abspath('./chromedriver.exe')
-        # driver = webdriver.Chrome(executable_path=str(exe)) 
         driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
         driver.get('https://cnpjs.rocks')
         try:
@@ -80,7 +79,6 @@ for i in range(len(nomes_empresas)):
         except:
             achou = False
             cnpj = 'Não achou'
-            contatos = 'Não achou'
             try:
                 vqd = driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[1]/div').text
                 if vqd[0] == 'V':
@@ -98,13 +96,11 @@ for i in range(len(nomes_empresas)):
                 except:
                     achou = False
                     cnpj = 'Não achou'
-                    contatos = 'Não achou'
         if achou:
             try:
                 time.sleep(5)
                 driver.switch_to.window(driver.window_handles[1])
                 cnpj = driver.find_element(by=By.XPATH, value='/html/body/div/div[2]/ul[1]/li[1]/strong').text
-                contatos = driver.find_element(by=By.XPATH, value='/html/body/div/div[2]/ul[5]').text
                 driver.close() 
 
                 valores_adicionar = [[cnpj]]
@@ -112,7 +108,94 @@ for i in range(len(nomes_empresas)):
                 result = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME, valueInputOption="RAW", body={"values":valores_adicionar}).execute()
             except:
                 cnpj = 'Não achou'
-                contatos = 'Não achou'
         print("Nome da empresa: ", nome, " CNPJ: ", cnpj)
         driver.quit()
-    
+    if phone == 'nan':
+        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+        driver.get('https://cnpjs.rocks')
+        try:
+            #Opening page
+            time.sleep(5)
+            driver.switch_to.window(driver.window_handles[0])
+            driver.find_element(by=By.XPATH, value='/html/body/header/form/input[1]').send_keys(nome)
+            driver.find_element(by=By.XPATH, value='/html/body/header/form/input[2]').click()
+            driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[1]/div[1]/div[1]/div[1]/div/a').click()
+            achou = True
+        except:
+            achou = False
+            phone = 'Não achou'
+            try:
+                vqd = driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[1]/div').text
+                if vqd[0] == 'V':
+                    driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[2]/div/div[1]/div[1]/div/a').click()
+                    achou = True
+            except:
+                try:
+                    evd = driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[1]/div/div[2]').text
+                    print(evd)
+                    if evd[0] == 'E':
+                        driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[1]/div/div[2]/a').click()
+                        time.sleep(2)
+                        driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[1]/div[1]/div[1]/div[1]/div/a').click()
+                        achou = True
+                except:
+                    achou = False
+                    phone = 'Não achou'
+        if achou:
+            try:
+                time.sleep(5)
+                driver.switch_to.window(driver.window_handles[1])
+                phone = driver.find_element(by=By.XPATH, value='/html/body/div/div[2]/ul[5]/li[1]/strong').text
+                driver.close()
+                valores_adicionar = [[phone]]
+                SAMPLE_RANGE_NAME = 'Empresas Tableau!E'+str(i+2)+':E'+str(i+2)
+                result = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME, valueInputOption="RAW", body={"values":valores_adicionar}).execute()
+            except:
+                phone = 'Não achou'
+        print("Nome da empresa: ", nome, " Phone: ", phone)
+        driver.quit()
+    if email == 'nan':
+        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+        driver.get('https://cnpjs.rocks')
+        try:
+            #Opening page
+            time.sleep(5)
+            driver.switch_to.window(driver.window_handles[0])
+            driver.find_element(by=By.XPATH, value='/html/body/header/form/input[1]').send_keys(nome)
+            driver.find_element(by=By.XPATH, value='/html/body/header/form/input[2]').click()
+            driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[1]/div[1]/div[1]/div[1]/div/a').click()
+            achou = True
+        except:
+            achou = False
+            email = 'Não achou'
+            try:
+                vqd = driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[1]/div').text
+                if vqd[0] == 'V':
+                    driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[2]/div/div[1]/div[1]/div/a').click()
+                    achou = True
+            except:
+                try:
+                    evd = driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[1]/div/div[2]').text
+                    print(evd)
+                    if evd[0] == 'E':
+                        driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[1]/div/div[2]/a').click()
+                        time.sleep(2)
+                        driver.find_element(by=By.XPATH, value='/html/body/div[1]/div[2]/p/div/div/div/div/div[5]/div[2]/div/div/div[1]/div[1]/div[1]/div[1]/div/a').click()
+                        achou = True
+                except:
+                    achou = False
+                    email = 'Não achou'
+        if achou:
+            try:
+                time.sleep(5)
+                driver.switch_to.window(driver.window_handles[1])
+                email = driver.find_element(by=By.XPATH, value='/html/body/div/div[2]/ul[5]/li[2]/strong').text
+                driver.close() 
+
+                valores_adicionar = [[email]]
+                SAMPLE_RANGE_NAME = 'Empresas Tableau!F'+str(i+2)+':F'+str(i+2)
+                result = sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME, valueInputOption="RAW", body={"values":valores_adicionar}).execute()
+            except:
+                email = 'Não achou'
+        print("Nome da empresa: ", nome, " Email: ", email)
+        driver.quit()
