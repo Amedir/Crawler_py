@@ -7,6 +7,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+from selenium.webdriver.chrome.service import Service
 import os
 import time
 import pandas as pd
@@ -62,7 +63,7 @@ for i in range(len(nomes_empresas)):
     phone = str(phone_empresas[i])
     email = str(email_empresas[i])
     if cnpj == 'nan':
-        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=chrome_options)
+        driver = webdriver.Chrome(service=Service(os.environ.get("CHROMEDRIVER_PATH")), options=chrome_options)
         driver.get('https://cnpjs.rocks')
         try:
             #Opening page
@@ -107,7 +108,7 @@ for i in range(len(nomes_empresas)):
         print("Nome da empresa: ", nome, " CNPJ: ", cnpj)
         driver.quit()
     if phone == 'nan':
-        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+        driver = webdriver.Chrome(service=Service(os.environ.get("CHROMEDRIVER_PATH")), options=chrome_options)
         driver.get('https://cnpjs.rocks')
         try:
             #Opening page
@@ -151,7 +152,7 @@ for i in range(len(nomes_empresas)):
         print("Nome da empresa: ", nome, " Phone: ", phone)
         driver.quit()
     if email == 'nan':
-        driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+        driver = webdriver.Chrome(service=Service(os.environ.get("CHROMEDRIVER_PATH")), options=chrome_options)
         driver.get('https://cnpjs.rocks')
         try:
             #Opening page
