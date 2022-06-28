@@ -2,16 +2,12 @@ from __future__ import print_function
 from lib2to3.pgen2 import driver
 from selenium.webdriver import Chrome
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 import os
-import requests
-import json 
 import time
 import pandas as pd
 
