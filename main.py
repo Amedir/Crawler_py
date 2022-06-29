@@ -35,7 +35,7 @@ chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--no-sandbox")
 CHROMEDRIVER_VERSION = "103.0.5060.53"
 
-# The ID and range of a sample spreadsheet.
+# The ID and range of a sample spreadsheet
 SAMPLE_SPREADSHEET_ID = '1DmTENt26YQzAAqewKWXltD1NoZRRD0KlU8j6pIXAy-o'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
