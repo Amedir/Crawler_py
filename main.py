@@ -8,6 +8,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from selenium.webdriver.chrome.service import Service
+import chromedriver_autoinstaller as chromedriver
 import os
 import time
 import pandas as pd
@@ -28,6 +29,7 @@ phone_empresas = df["bussines_phone"]
 email_empresas = df["bussines_email"]
 
 # COnfiguração para o Google Chrome do Heroku
+chromedriver.install()
 chrome_options = webdriver.ChromeOptions()
 chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
 chrome_options.add_argument("--headless")
