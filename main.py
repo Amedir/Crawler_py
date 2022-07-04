@@ -1,4 +1,3 @@
-from __future__ import print_function
 from lib2to3.pgen2 import driver
 from selenium.webdriver import Chrome
 from selenium import webdriver
@@ -60,14 +59,15 @@ if not creds or not creds.valid:
 service = build('sheets', 'v4', credentials=creds)
 sheet = service.spreadsheets()
 
+driver = webdriver.Chrome(service=Service(os.environ.get("CHROMEDRIVER_PATH")), options=chrome_options)
+driver.get('https://cnpjs.rocks')
+
 for i in range(len(nomes_empresas)):
     nome = str(nomes_empresas[i])
     cnpj = str(cnpj_empreasas[i])
     phone = str(phone_empresas[i])
     email = str(email_empresas[i])
     if cnpj == 'nan':
-        driver = webdriver.Chrome(service=Service(os.environ.get("CHROMEDRIVER_PATH")), options=chrome_options)
-        driver.get('https://cnpjs.rocks')
         try:
             #Opening page
             time.sleep(5)
@@ -109,10 +109,7 @@ for i in range(len(nomes_empresas)):
             except:
                 cnpj = 'Não achou'
         print("Nome da empresa: ", nome, " CNPJ: ", cnpj)
-        driver.quit()
     if phone == 'nan':
-        driver = webdriver.Chrome(service=Service(os.environ.get("CHROMEDRIVER_PATH")), options=chrome_options)
-        driver.get('https://cnpjs.rocks')
         try:
             #Opening page
             time.sleep(5)
@@ -153,10 +150,7 @@ for i in range(len(nomes_empresas)):
             except:
                 phone = 'Não achou'
         print("Nome da empresa: ", nome, " Phone: ", phone)
-        driver.quit()
     if email == 'nan':
-        driver = webdriver.Chrome(service=Service(os.environ.get("CHROMEDRIVER_PATH")), options=chrome_options)
-        driver.get('https://cnpjs.rocks')
         try:
             #Opening page
             time.sleep(5)
@@ -198,4 +192,4 @@ for i in range(len(nomes_empresas)):
             except:
                 email = 'Não achou'
         print("Nome da empresa: ", nome, " Email: ", email)
-        driver.quit()
+driver.quit()
